@@ -31,13 +31,16 @@ class Texture {
   Future<bool> load(String serverpathImages) async {
     var completer = Completer<ImageInfo>();
     var img = NetworkImage(serverpathImages + name);
-    img.resolve(const ImageConfiguration()).addListener(ImageStreamListener((info, _) {
+    img
+        .resolve(const ImageConfiguration())
+        .addListener(ImageStreamListener((info, _) {
       completer.complete(info);
     }));
     ImageInfo imageInfo = await completer.future;
     uiimage = imageInfo.image;
     pngBytes = (await uiimage.toByteData(format: ui.ImageByteFormat.png))!;
-    ByteData openglBytes = (await uiimage.toByteData(format: ui.ImageByteFormat.rawUnmodified))!;
+    ByteData openglBytes =
+        (await uiimage.toByteData(format: ui.ImageByteFormat.rawUnmodified))!;
     data = openglBytes.buffer.asUint8List();
 
     loaded = true;
@@ -57,10 +60,11 @@ class Texture {
       ..bindTexture(gl.TEXTURE_2D, textureID)
       ..texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
       ..texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
-    // Set texture filtering
+      // Set texture filtering
       ..texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
       ..texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, len, hgt, 0, gl.RGBA, gl.UNSIGNED_BYTE, data);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, len, hgt, 0, gl.RGBA,
+        gl.UNSIGNED_BYTE, data);
   }
 
   void bind() {

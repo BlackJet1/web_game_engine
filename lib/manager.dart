@@ -63,7 +63,8 @@ class Manager {
     final key = await img.obtainKey(config);
     final data = await key.bundle.load(key.name);
     imageData.add(Mimage(name));
-    imageData.firstWhere((element) => element.name == name).data = Uint8List.fromList(data.buffer.asUint8List());
+    imageData.firstWhere((element) => element.name == name).data =
+        Uint8List.fromList(data.buffer.asUint8List());
     if (kDebugMode) {
       print('manager => loaded $name');
     }

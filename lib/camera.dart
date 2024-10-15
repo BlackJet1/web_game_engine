@@ -1,7 +1,7 @@
-
 import 'package:vector_math/vector_math.dart';
 import 'package:web_game_engine/shaders.dart';
 import 'package:web_game_engine/web_game_engine.dart';
+
 class JCamera {
   static Vector2 pos = Vector2.zero();
   static int viewLen = 1280;
@@ -15,7 +15,8 @@ class JCamera {
 
   static void screen() {
     final gl = Engine.flutterGlPlugin.gl;
-    gl.uniform4f(JShader.cameraSlot, 0, 0, Engine.engineLen / 2, Engine.engineHgt / 2);
+    gl.uniform4f(
+        JShader.cameraSlot, 0, 0, Engine.engineLen / 2, Engine.engineHgt / 2);
   }
 
   static void prepare() {
@@ -37,7 +38,7 @@ class JCamera {
       shift.x -= delta * spd * shift.x;
     }
     //if (shift.y > 0.9)
-        {
+    {
       final vspd = spd.abs() + (shift.y < 0 ? 50 : 1);
       pos.y += shift.y * delta * vspd;
       shift.y -= delta * vspd;

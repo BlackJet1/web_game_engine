@@ -158,7 +158,7 @@ class JShader {
   }
 
   static void useProgram(int slot) {
-    if (slot==currentProgram) return;
+    if (slot == currentProgram) return;
     currentProgram = slot;
     final gl = Engine.flutterGlPlugin.gl;
     gl.useProgram(programsHandle[slot]);

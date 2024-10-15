@@ -1,4 +1,3 @@
-
 import 'package:web_game_engine/model/textureatom_model.dart';
 
 class JQuad {
@@ -17,8 +16,8 @@ class JQuad {
   double g;
   double b;
 
-  JQuad(this.x1, this.y1, this.x2, this.y2, this.x3, this.y3, this.x4, this.y4, this.z, this.atom, this.a, this.r,
-      this.g, this.b);
+  JQuad(this.x1, this.y1, this.x2, this.y2, this.x3, this.y3, this.x4, this.y4,
+      this.z, this.atom, this.a, this.r, this.g, this.b);
 }
 
 class JFlat {
@@ -41,22 +40,22 @@ class JFlat {
   final int frameLen = 0;
 
   JFlat(
-      this.x,
-      this.y,
-      this.z,
-      this.len,
-      this.hgt,
-      this.atom,
-      this.r,
-      this.g,
-      this.b,
-      this.a,
-      this.angle,
-      this.anchorx,
-      this.anchory,
-      this.mirrorX,
-      this.mirrorY,
-      );
+    this.x,
+    this.y,
+    this.z,
+    this.len,
+    this.hgt,
+    this.atom,
+    this.r,
+    this.g,
+    this.b,
+    this.a,
+    this.angle,
+    this.anchorx,
+    this.anchory,
+    this.mirrorX,
+    this.mirrorY,
+  );
 }
 
 class JLine {
@@ -72,17 +71,17 @@ class JLine {
   final double a;
 
   JLine(
-      this.x1,
-      this.y1,
-      this.z1,
-      this.x2,
-      this.y2,
-      this.z2,
-      this.r,
-      this.g,
-      this.b,
-      this.a,
-      );
+    this.x1,
+    this.y1,
+    this.z1,
+    this.x2,
+    this.y2,
+    this.z2,
+    this.r,
+    this.g,
+    this.b,
+    this.a,
+  );
 }
 
 class JRect {
@@ -96,5 +95,6 @@ class JRect {
   final double b;
   final double a;
 
-  JRect(this.x, this.y, this.z, this.len, this.hgt, this.r, this.g, this.b, this.a);
+  JRect(this.x, this.y, this.z, this.len, this.hgt, this.r, this.g, this.b,
+      this.a);
 }

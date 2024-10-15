@@ -538,7 +538,8 @@ class Engine {
     }
   }
 
-  static Future<bool> init({required int engineLen, required int engineHgt}) async {
+  static Future<bool> init(
+      {required int engineLen, required int engineHgt}) async {
     Engine.engineLen = engineLen;
     Engine.engineHgt = engineHgt;
     Engine.flutterGlPlugin = FlutterGlPlugin();
