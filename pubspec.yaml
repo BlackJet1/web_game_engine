@@ -1,7 +1,7 @@
 name: web_game_engine
-description: "A new Flutter project."
+description: 2.5d web game engine for flutter
 version: 0.0.1
-homepage:
+repository: https://github.com/BlackJet1/web_game_engine
 
 environment:
   sdk: ^3.5.3
@@ -11,7 +11,7 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_gl: ^0.0.21
-  vector_math: 2.1.4
+  vector_math: ^2.1.4
 
 dev_dependencies:
   flutter_test:
