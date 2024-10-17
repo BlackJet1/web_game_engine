@@ -1,6 +1,6 @@
 name: web_game_engine
 description: 2.5d web game engine for flutter
-version: 0.0.2
+version: 0.0.2+1
 repository: https://github.com/BlackJet1/web_game_engine
 
 environment:
