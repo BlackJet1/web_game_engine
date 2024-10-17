@@ -11,6 +11,7 @@ dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.8
+  vector_math: ^2.1.4
   web_game_engine:
     path: ../
 dev_dependencies:

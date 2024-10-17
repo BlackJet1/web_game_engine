@@ -1,33 +1,22 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_gl/flutter_gl.dart';
+import 'package:vector_math/vector_math.dart';
 import 'package:web_game_engine/shaders.dart';
 import 'package:web_game_engine/web_game_engine.dart';
-
-import 'camera.dart';
 
 class Loop {
   bool isAnimation = false;
   num dpr = 1.0;
   int _previous = DateTime.timestamp().microsecondsSinceEpoch;
   double dt = 0;
-  int zoom = 100;
   void Function()? renderCallback;
   void Function(double)? updateCallback;
 
   Future<bool> init(int len, int hgt, [renderer, update]) async {
-    if (renderer != null) {
-      renderCallback = renderer;
-    } else {
-      renderCallback = null;
-    }
-    if (update != null) {
-      updateCallback = update;
-    } else {
-      updateCallback = null;
-    }
+    renderCallback = renderer;
+    updateCallback = update;
     Engine.engineLen = len;
     Engine.engineHgt = hgt;
-    zoom = 100;
     await prepare();
     //await Wardrobe.loadTextures();
     //render();
@@ -56,7 +45,7 @@ class Loop {
 
   void render() {
     if (renderCallback != null) {
-      beginRender(zoom);
+      beginRender();
       renderCallback!();
       Engine.render();
     }
@@ -164,16 +153,14 @@ void main() {
     return true;
   }
 
-  void beginRender(int zoom) {
+  void beginRender() {
     final gl = Engine.flutterGlPlugin.gl;
 
     gl.viewport(0, 0, Engine.engineLen, Engine.engineHgt);
     gl.enable(gl.BLEND);
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
-    JCamera.viewHgt = Engine.engineHgt * 100 ~/ zoom;
-    JCamera.viewLen = Engine.engineLen * 100 ~/ zoom;
-    JCamera.prepare();
+    Engine.cameras[Engine.currentCamera].prepare();
 
     // Clear canvas
     gl.clearColor(0, 0, 0, 1);

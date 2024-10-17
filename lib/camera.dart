@@ -3,46 +3,49 @@ import 'package:web_game_engine/shaders.dart';
 import 'package:web_game_engine/web_game_engine.dart';
 
 class JCamera {
-  static Vector2 pos = Vector2.zero();
-  static int viewLen = 1280;
-  static int viewHgt = 720;
-  static Vector2 shift = Vector2.zero();
+  Vector2 viewfinder = Vector2.zero();
+  Vector2 viewport = Vector2(1280, 720);
+  Vector2 shift = Vector2.zero();
 
   // смотри куда то, то куда смотрим - в центре экрана
-  static void lookAt(Vector2 to) {
-    shift = to - pos;
+  void lookAt(Vector2 to) {
+    shift = to - viewfinder;
   }
 
-  static void screen() {
+  void moveImmediately(Vector2 shift) {
+    viewfinder += shift;
+  }
+
+  void screen() {
     final gl = Engine.flutterGlPlugin.gl;
     gl.uniform4f(
         JShader.cameraSlot, 0, 0, Engine.engineLen / 2, Engine.engineHgt / 2);
   }
 
-  static void prepare() {
+  void prepare() {
     final gl = Engine.flutterGlPlugin.gl;
-    gl.uniform4f(JShader.cameraSlot, pos.x, pos.y, viewLen / 2, viewHgt / 2);
+    gl.uniform4f(JShader.cameraSlot, viewfinder.x, viewfinder.y, viewport.x / 2,
+        viewport.y / 2);
   }
 
-  static void init() {
+  void init() {
     shift = Vector2.zero();
-    pos = Vector2.zero();
-    viewHgt = Engine.engineHgt;
-    viewLen = Engine.engineLen;
+    viewfinder = Vector2.zero();
+    viewport = Vector2(Engine.engineLen + 0.0, Engine.engineHgt + 0.0);
   }
 
-  static void update(double delta, int spd) {
+  void update(double delta, int spd) {
     //if (shift.x > 0.9)
     {
-      pos.x += shift.x * delta * spd;
+      viewfinder.x += shift.x * delta * spd;
       shift.x -= delta * spd * shift.x;
     }
     //if (shift.y > 0.9)
     {
       final vspd = spd.abs() + (shift.y < 0 ? 50 : 1);
-      pos.y += shift.y * delta * vspd;
+      viewfinder.y += shift.y * delta * vspd;
       shift.y -= delta * vspd;
-      if (pos.y < 0) pos.y = 0;
+      if (viewfinder.y < 0) viewfinder.y = 0;
     }
   }
 }
