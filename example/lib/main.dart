@@ -8,7 +8,7 @@ void main() async {
   //await export();
   WidgetsFlutterBinding.ensureInitialized();
   setUrlStrategy(null);
-  await Engine.init(engineLen: 1280, engineHgt: 720);
+  Engine.init(engineLen: 1280, engineHgt: 720);
 
   runApp(const App());
 }

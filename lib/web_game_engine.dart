@@ -9,11 +9,14 @@ import 'dart:typed_data';
 import 'dart:math';
 
 import 'package:web_game_engine/shaders.dart';
+import 'package:web_game_engine/texture.dart';
 import 'package:web_game_engine/wardrobe.dart';
 
 class Engine {
-  static late int engineLen;
-  static late int engineHgt;
+  static JShader shader = JShader();
+  static JTexture texture = JTexture();
+  static int engineLen = 1280;
+  static int engineHgt = 720;
   static late FlutterGlPlugin flutterGlPlugin;
   static List<JSprite> scene = [];
   static List<JSprite> post = [];
@@ -61,20 +64,19 @@ class Engine {
       ..bindBuffer(gl.ARRAY_BUFFER, vertexBuffer)
       ..bufferData(
           gl.ARRAY_BUFFER, vertices.length / 7, vertices, gl.STATIC_DRAW)
-      ..vertexAttribPointer(JShader.positionSlot, 3, gl.FLOAT, false, stride, 0)
-      ..enableVertexAttribArray(JShader.positionSlot);
+      ..vertexAttribPointer(shader.positionSlot, 3, gl.FLOAT, false, stride, 0)
+      ..enableVertexAttribArray(shader.positionSlot);
 
     final colorBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
     gl.bufferData(
         gl.ARRAY_BUFFER, vertices.length / 7, vertices, gl.STATIC_DRAW);
-    gl.enableVertexAttribArray(JShader.colorSlot);
+    gl.enableVertexAttribArray(shader.colorSlot);
     const size = 4;
     final type = gl.FLOAT; // the data is 32bit floats
 
     const offset = Float32List.bytesPerElement * 3;
-    gl.vertexAttribPointer(
-        JShader.colorSlot, size, type, false, stride, offset);
+    gl.vertexAttribPointer(shader.colorSlot, size, type, false, stride, offset);
     gl.drawArrays(gl.LINES, 0, lines.length * 2);
   }
 
@@ -82,7 +84,7 @@ class Engine {
     final gl = flutterGlPlugin.gl;
     for (final tex in usingTextures) {
       //print('try $tex');
-      Wardrobe.bindByName(tex);
+      texture.bindByName(tex);
       final filteredScene = List<JSprite>.from(
           scene.where((element) => element.atom.textureName == tex));
       dynamic vao;
@@ -212,14 +214,14 @@ class Engine {
         ..bufferData(
             gl.ARRAY_BUFFER, vertices.length / 9, vertices, gl.STATIC_DRAW)
         ..vertexAttribPointer(
-            JShader.positionSlot, 3, gl.FLOAT, false, stride, 0)
-        ..enableVertexAttribArray(JShader.positionSlot);
+            shader.positionSlot, 3, gl.FLOAT, false, stride, 0)
+        ..enableVertexAttribArray(shader.positionSlot);
 
       final texCoordBuffer = gl.createBuffer();
       gl.bindBuffer(gl.ARRAY_BUFFER, texCoordBuffer);
       gl.bufferData(
           gl.ARRAY_BUFFER, vertices.length / 9, vertices, gl.STATIC_DRAW);
-      gl.enableVertexAttribArray(JShader.textureSlot);
+      gl.enableVertexAttribArray(shader.textureSlot);
       var size = 2; // 2 components per iteration
       var type = gl.FLOAT; // the data is 32bit floats
       const normalize = false; // don't normalize the data
@@ -227,19 +229,19 @@ class Engine {
       var offset = Float32List.bytesPerElement *
           7; // start at the beginning of the buffer
       gl.vertexAttribPointer(
-          JShader.textureSlot, size, type, normalize, stride, offset);
+          shader.textureSlot, size, type, normalize, stride, offset);
 
       var colorBuffer = gl.createBuffer();
       gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
       gl.bufferData(
           gl.ARRAY_BUFFER, vertices.length / 9, vertices, gl.STATIC_DRAW);
-      gl.enableVertexAttribArray(JShader.colorSlot);
+      gl.enableVertexAttribArray(shader.colorSlot);
       size = 4;
       type = gl.FLOAT; // the data is 32bit floats
 
       offset = Float32List.bytesPerElement * 3;
       gl.vertexAttribPointer(
-          JShader.colorSlot, size, type, normalize, stride, offset);
+          shader.colorSlot, size, type, normalize, stride, offset);
 
       //gl.drawArrays(gl.TRIANGLES, 0, n);
       dynamic ibo = gl.createBuffer();
@@ -254,6 +256,14 @@ class Engine {
 
   static int _previous = 0;
 
+  static prepareCurrentCamera() {
+    final viewfinder = cameras[currentCamera].viewfinder;
+    final viewport = cameras[currentCamera].viewport;
+    final gl = flutterGlPlugin.gl;
+    gl.uniform4f(shader.cameraSlot, viewfinder.x, viewfinder.y, viewport.x / 2,
+        viewport.y / 2);
+  }
+
   static void render() {
     final timestamp = DateTime.timestamp().microsecondsSinceEpoch;
     final durationDelta = timestamp - _previous;
@@ -265,12 +275,12 @@ class Engine {
     if (TextureAtom.aniCounter < 0) TextureAtom.aniCounter += 1;
     _previous = timestamp;
     if (scene.isNotEmpty) {
-      JShader.useProgram(1);
-      cameras[currentCamera].prepare();
+      shader.useProgram(1);
+      prepareCurrentCamera();
       _drawScene();
     }
     if (lines.isNotEmpty) {
-      JShader.useProgram(0);
+      shader.useProgram(0);
       if (lines.isNotEmpty) _drawLines();
     }
   }
@@ -310,15 +320,18 @@ class Engine {
     }
   }
 
-  static Future<bool> init(
-      {required int engineLen, required int engineHgt}) async {
+  static void init(
+      {required int engineLen, required int engineHgt}) {
     Engine.engineLen = engineLen;
     Engine.engineHgt = engineHgt;
     Engine.flutterGlPlugin = FlutterGlPlugin();
     cameras.clear();
     currentCamera = 0;
     cameras.add(JCamera());
+    return;
+  }
 
+  static Future<void> prepare() async {
     final options = <String, dynamic>{
       'antialias': true,
       'alpha': true,
@@ -336,6 +349,7 @@ class Engine {
       index[i * 6 + 4] = i * 4 + 2;
       index[i * 6 + 5] = i * 4 + 3;
     }
-    return true;
   }
+
+
 }

@@ -3,24 +3,24 @@ import 'package:web_game_engine/manager.dart';
 import 'package:web_game_engine/web_game_engine.dart';
 
 class JShader {
-  static int currentProgram = -1;
-  static late dynamic positionSlot;
-  static late dynamic textureSlot;
-  static late dynamic colorSlot;
+  int currentProgram = -1;
+  dynamic positionSlot;
+  dynamic textureSlot;
+  dynamic colorSlot;
   //static late dynamic bindtexture;
-  static late dynamic animationSlot;
-  static late dynamic cameraSlot;
+  dynamic animationSlot;
+  dynamic cameraSlot;
 
-  static List<dynamic> programsHandle = List.filled(256, -1);
+  List<dynamic> programsHandle = List.filled(256, -1);
 
-  static void release() {
+  void release() {
     for (var q = 0; q < 256; q++) {
       if (programsHandle[q] != -1) deleteProgram(q);
     }
     programsHandle = List.filled(256, -1);
   }
 
-  static void prepareSlots(dynamic programHandle, gl) {
+  void prepareSlots(dynamic programHandle, gl) {
     positionSlot = gl.getAttribLocation(programHandle, 'vPosition');
     textureSlot = gl.getAttribLocation(programHandle, 'vTex');
     colorSlot = gl.getAttribLocation(programHandle, 'vColor');
@@ -30,14 +30,14 @@ class JShader {
   }
 
   // класс для упрощения работы с вершинными и фрагментыми шейдерами
-  static String loadAsset(String name) {
+  String loadAsset(String name) {
     if (kDebugMode) {
       print('begin loading asset; $name');
     }
     return Manager.getString(name);
   }
 
-  static dynamic stringShader(int type, String source) {
+  dynamic stringShader(int type, String source) {
     currentProgram = -1;
     final gl = Engine.flutterGlPlugin.gl;
     final shader = gl.createShader(type);
@@ -66,12 +66,12 @@ class JShader {
     return shader;
   }
 
-  static int assetShader(int type, String filename) {
+  int assetShader(int type, String filename) {
     final shaderStr = loadAsset(filename);
     return stringShader(type, shaderStr);
   }
 
-  static int assetProgram(String vertex, String fragment) {
+  int assetProgram(String vertex, String fragment) {
     final gl = Engine.flutterGlPlugin.gl;
     final vertexShader = assetShader(gl.VERTEX_SHADER, vertex);
     if (vertexShader == 0) {
@@ -111,7 +111,7 @@ class JShader {
     return programHandle as int;
   }
 
-  static dynamic stringProgramm(String vertex, String fragment) {
+  dynamic stringProgramm(String vertex, String fragment) {
     final gl = Engine.flutterGlPlugin.gl;
     final vertexShader = stringShader(gl.VERTEX_SHADER, vertex);
     if (vertexShader == 0) {
@@ -149,15 +149,15 @@ class JShader {
     return programHandle;
   }
 
-  static void loadProgram(int slot, String vertex, String fragment) {
+  void loadProgram(int slot, String vertex, String fragment) {
     programsHandle[slot] = assetProgram(vertex, fragment);
   }
 
-  static void creareProgram(int slot, String vertex, String fragment) {
+  void creareProgram(int slot, String vertex, String fragment) {
     programsHandle[slot] = stringProgramm(vertex, fragment);
   }
 
-  static void useProgram(int slot) {
+  void useProgram(int slot) {
     if (slot == currentProgram) return;
     currentProgram = slot;
     final gl = Engine.flutterGlPlugin.gl;
@@ -174,7 +174,7 @@ class JShader {
      */
   }
 
-  static void deleteProgram(int slot) {
+  void deleteProgram(int slot) {
     final gl = Engine.flutterGlPlugin.gl;
     gl.deleteProgram(programsHandle[slot]);
   }

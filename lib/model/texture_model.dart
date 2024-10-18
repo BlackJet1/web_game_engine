@@ -10,7 +10,7 @@ class Texture {
   late final int len;
   late final int hgt;
   late ui.Image uiimage;
-  late ByteData pngBytes;
+  ByteData pngBytes=ByteData(0);
 
   //late ByteData openglBytes;
   late dynamic textureID;
@@ -21,16 +21,9 @@ class Texture {
     textureID = Engine.flutterGlPlugin.gl.createTexture();
   }
 
-  Texture.fromString(String stringData) {
-    name = stringData.split(',')[0];
-    len = int.parse(stringData.split(',')[1]);
-    hgt = int.parse(stringData.split(',')[2]);
-    textureID = Engine.flutterGlPlugin.gl.createTexture();
-  }
-
-  Future<bool> load(String serverpathImages) async {
-    var completer = Completer<ImageInfo>();
-    var img = NetworkImage(serverpathImages + name);
+  Future<bool> loadNetwork(String serverpathImages) async {
+    final completer = Completer<ImageInfo>();
+    final img = NetworkImage(serverpathImages + name);
     img
         .resolve(const ImageConfiguration())
         .addListener(ImageStreamListener((info, _) {
@@ -68,7 +61,6 @@ class Texture {
   }
 
   void bind() {
-    //print('bind texture $name');
     final gl = Engine.flutterGlPlugin.gl;
     gl
       ..activeTexture(gl.TEXTURE0)

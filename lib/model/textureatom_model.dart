@@ -1,4 +1,4 @@
-import 'package:web_game_engine/wardrobe.dart';
+import 'package:web_game_engine/web_game_engine.dart';
 
 class TextureAtom {
   static double aniCounter = 0;
@@ -31,8 +31,8 @@ class TextureAtom {
     final textureName = json['texname'] as String;
     final frames = int.parse(json['frames']);
     final fps = int.parse(json['fps']).clamp(1, 10000);
-    final ln = Wardrobe.getTextureByName(textureName)?.len ?? 1;
-    final hg = Wardrobe.getTextureByName(textureName)?.hgt ?? 1;
+    final ln = Engine.texture.getTextureByName(textureName)?.len ?? 1;
+    final hg = Engine.texture.getTextureByName(textureName)?.hgt ?? 1;
     final tx1 = ix1 / ln;
     final ty1 = iy1 / hg;
     final tx2 = ix2 / ln;
@@ -74,41 +74,6 @@ class TextureAtom {
     ty2 = y / th;
     frames = 1;
     fps = 1;
-  }
-
-  TextureAtom.parse(String data) {
-    /*
-    парсинг текстурных координат
-    сначала имя файла текстуры, потом координаты
-     */
-    tx1 = tx2 = ty1 = ty2 = 0;
-    textureName = '';
-    final parts = data.split(',');
-    if (parts.length < 5) return;
-    textureName = parts[0];
-    tl = Wardrobe.getTextureByName(textureName)?.len ?? 1;
-    th = Wardrobe.getTextureByName(textureName)?.hgt ?? 1;
-    ix1 = int.parse(parts[1].replaceAll(' ', ''));
-    iy1 = int.parse(parts[2].replaceAll(' ', ''));
-    ix2 = int.parse(parts[3].replaceAll(' ', ''));
-    iy2 = int.parse(parts[4].replaceAll(' ', ''));
-    if (parts.length > 4) {
-      frames = int.parse(parts[5]);
-    } else {
-      frames = 1;
-    }
-    if (parts.length > 5) {
-      fps = int.parse(parts[6]).clamp(1, 1000);
-    } else {
-      fps = 1;
-    }
-    if (fps < 1) fps = 1;
-    tx1 = ix1 / tl;
-    ty1 = iy1 / th;
-    tx2 = ix2 / tl;
-    ty2 = iy2 / th;
-    len = (ix1 - ix2).abs();
-    hgt = (iy1 - iy2).abs();
   }
 
   Map<String, dynamic> toJson() => {

@@ -38,7 +38,7 @@ class PLayGameState extends State<PlayGameWidget> {
   @override
   void initState() {
     ServicesBinding.instance.keyboard.addHandler(_onKey);
-    gameLoop.init(720, 1280, render, update);
+    gameLoop.init(render, update);
     super.initState();
   }
 
@@ -79,7 +79,7 @@ class DrawFieldGame extends StatelessWidget {
           final dx = e.delta.dx;
           final dy = e.delta.dy;
           Engine.cameras[Engine.currentCamera]
-              .moveImmediately(Vector2(-dx * 4, -dy * 4));
+              .moveBy(Vector2(-dx * 4, -dy * 4));
         },
         child: SizedBox.expand(
           child: IgnorePointer(

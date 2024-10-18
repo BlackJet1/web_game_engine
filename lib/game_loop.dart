@@ -1,7 +1,4 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter_gl/flutter_gl.dart';
-import 'package:vector_math/vector_math.dart';
-import 'package:web_game_engine/shaders.dart';
 import 'package:web_game_engine/web_game_engine.dart';
 
 class Loop {
@@ -12,11 +9,9 @@ class Loop {
   void Function()? renderCallback;
   void Function(double)? updateCallback;
 
-  Future<bool> init(int len, int hgt, [renderer, update]) async {
+  Future<bool> init([renderer, update]) async {
     renderCallback = renderer;
     updateCallback = update;
-    Engine.engineLen = len;
-    Engine.engineHgt = hgt;
     await prepare();
     //await Wardrobe.loadTextures();
     //render();
@@ -52,17 +47,7 @@ class Loop {
   }
 
   Future<bool> prepare() async {
-    Engine.flutterGlPlugin = FlutterGlPlugin();
-
-    Map<String, dynamic> options = {
-      "antialias": true,
-      "alpha": true,
-      "width": Engine.engineLen,
-      "height": Engine.engineHgt,
-      "dpr": dpr
-    };
-
-    await Engine.flutterGlPlugin.initialize(options: options);
+    await Engine.prepare();
     if (kDebugMode) {
       print('get instance');
     }
@@ -106,8 +91,8 @@ void main() {
 }
     """;
 
-    JShader.creareProgram(0, vs, fs);
-    JShader.useProgram(0);
+    Engine.shader.creareProgram(0, vs, fs);
+    Engine.shader.useProgram(0);
     vs = """#version $version
 precision highp float;
 uniform vec4 camera;
@@ -147,8 +132,8 @@ void main() {
 }
     """;
 
-    JShader.creareProgram(1, vs, fs);
-    JShader.useProgram(1);
+    Engine.shader.creareProgram(1, vs, fs);
+    Engine.shader.useProgram(1);
     // Write the positions of vertices to a vertex shader
     return true;
   }
@@ -156,11 +141,12 @@ void main() {
   void beginRender() {
     final gl = Engine.flutterGlPlugin.gl;
 
-    gl.viewport(0, 0, Engine.engineLen, Engine.engineHgt);
+    gl.viewport(0, 0, Engine.cameras[Engine.currentCamera].viewport.x,
+        Engine.cameras[Engine.currentCamera].viewport.y);
     gl.enable(gl.BLEND);
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
-    Engine.cameras[Engine.currentCamera].prepare();
+    Engine.prepareCurrentCamera();
 
     // Clear canvas
     gl.clearColor(0, 0, 0, 1);
