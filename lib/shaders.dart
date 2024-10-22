@@ -39,7 +39,7 @@ class JShader {
 
   dynamic stringShader(int type, String source) {
     currentProgram = -1;
-    final gl = Engine.flutterGlPlugin.gl;
+    final gl = Engine.instance.flutterGlPlugin.gl;
     final shader = gl.createShader(type);
     if (shader == 0) {
       if (kDebugMode) {
@@ -72,7 +72,7 @@ class JShader {
   }
 
   int assetProgram(String vertex, String fragment) {
-    final gl = Engine.flutterGlPlugin.gl;
+    final gl = Engine.instance.flutterGlPlugin.gl;
     final vertexShader = assetShader(gl.VERTEX_SHADER, vertex);
     if (vertexShader == 0) {
       if (kDebugMode) {
@@ -112,7 +112,7 @@ class JShader {
   }
 
   dynamic stringProgramm(String vertex, String fragment) {
-    final gl = Engine.flutterGlPlugin.gl;
+    final gl = Engine.instance.flutterGlPlugin.gl;
     final vertexShader = stringShader(gl.VERTEX_SHADER, vertex);
     if (vertexShader == 0) {
       if (kDebugMode) {
@@ -160,7 +160,7 @@ class JShader {
   void useProgram(int slot) {
     if (slot == currentProgram) return;
     currentProgram = slot;
-    final gl = Engine.flutterGlPlugin.gl;
+    final gl = Engine.instance.flutterGlPlugin.gl;
     gl.useProgram(programsHandle[slot]);
     prepareSlots(programsHandle[slot], gl);
     return;
@@ -175,7 +175,7 @@ class JShader {
   }
 
   void deleteProgram(int slot) {
-    final gl = Engine.flutterGlPlugin.gl;
+    final gl = Engine.instance.flutterGlPlugin.gl;
     gl.deleteProgram(programsHandle[slot]);
   }
 }

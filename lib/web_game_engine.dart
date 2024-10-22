@@ -10,25 +10,35 @@ import 'dart:math';
 
 import 'package:web_game_engine/shaders.dart';
 import 'package:web_game_engine/texture.dart';
-import 'package:web_game_engine/wardrobe.dart';
 
 class Engine {
-  static JShader shader = JShader();
-  static JTexture texture = JTexture();
-  static int engineLen = 1280;
-  static int engineHgt = 720;
-  static late FlutterGlPlugin flutterGlPlugin;
-  static List<JSprite> scene = [];
-  static List<JSprite> post = [];
-  static List<String> usingTextures = [];
-  static List<String> usingPostTextures = [];
-  static List postScene = [];
-  static List<JLine> lines = [];
-  static Int16List index = Int16List(65535);
-  static List<JCamera> cameras = [];
-  static int currentCamera = 0;
+  static final Engine _engine = Engine._internal();
 
-  static void _drawLines() {
+  static Engine get instance => _engine;
+
+  factory Engine() {
+    return _engine;
+  }
+
+  Engine._internal();
+
+  int _previous = 0;
+  JShader shader = JShader();
+  JTexture texture = JTexture();
+  int engineLen = 1280;
+  int engineHgt = 720;
+  late FlutterGlPlugin flutterGlPlugin;
+  List<JSprite> scene = [];
+  List<JSprite> post = [];
+  List<String> usingTextures = [];
+  List<String> usingPostTextures = [];
+  List postScene = [];
+  List<JLine> lines = [];
+  Int16List index = Int16List(65535);
+  List<JCamera> cameras = [];
+  int currentCamera = 0;
+
+  void _drawLines() {
     final gl = flutterGlPlugin.gl;
     final dynamic vaoLines = gl.createVertexArray();
     final vertices = Float32Array(lines.length * 14);
@@ -80,7 +90,7 @@ class Engine {
     gl.drawArrays(gl.LINES, 0, lines.length * 2);
   }
 
-  static void _drawScene() {
+  void _drawScene() {
     final gl = flutterGlPlugin.gl;
     for (final tex in usingTextures) {
       //print('try $tex');
@@ -254,9 +264,9 @@ class Engine {
     }
   }
 
-  static int _previous = 0;
 
-  static prepareCurrentCamera() {
+
+  prepareCurrentCamera() {
     final viewfinder = cameras[currentCamera].viewfinder;
     final viewport = cameras[currentCamera].viewport;
     final gl = flutterGlPlugin.gl;
@@ -264,7 +274,7 @@ class Engine {
         viewport.y / 2);
   }
 
-  static void render() {
+  void render() {
     final timestamp = DateTime.timestamp().microsecondsSinceEpoch;
     final durationDelta = timestamp - _previous;
     final dt = durationDelta / Duration.microsecondsPerSecond;
@@ -285,7 +295,7 @@ class Engine {
     }
   }
 
-  static void clearScene() {
+  void clearScene() {
     scene = [];
     lines = [];
     post = [];
@@ -293,11 +303,11 @@ class Engine {
     usingTextures.clear();
   }
 
-  static void addLine(JLine line) {
+  void addLine(JLine line) {
     lines.add(line);
   }
 
-  static void addBox(double x, double y, double z, double len, double hgt,
+  void addBox(double x, double y, double z, double len, double hgt,
       double a, double r, double g, double b) {
     lines
       ..add(JLine(x, y, z, x + len, y, z, r, g, b, a))
@@ -306,41 +316,40 @@ class Engine {
       ..add(JLine(x + len, y, z, x + len, y + hgt, z, r, g, b, a));
   }
 
-  static void addSprite(JSprite sprite) {
+  void addSprite(JSprite sprite) {
     scene.add(sprite);
     if (!usingTextures.any((element) => element == sprite.atom.textureName)) {
       usingTextures.add(sprite.atom.textureName);
     }
   }
 
-  static void addQuad(JSprite quad) {
+  void addQuad(JSprite quad) {
     post.add(quad);
     if (!usingPostTextures.any((element) => element == quad.atom.textureName)) {
       usingPostTextures.add(quad.atom.textureName);
     }
   }
 
-  static void init(
-      {required int engineLen, required int engineHgt}) {
-    Engine.engineLen = engineLen;
-    Engine.engineHgt = engineHgt;
-    Engine.flutterGlPlugin = FlutterGlPlugin();
+  void init({required int engineLen, required int engineHgt}) {
+    engineLen = engineLen;
+    engineHgt = engineHgt;
+    flutterGlPlugin = FlutterGlPlugin();
     cameras.clear();
     currentCamera = 0;
     cameras.add(JCamera());
     return;
   }
 
-  static Future<void> prepare() async {
+  Future<void> prepare() async {
     final options = <String, dynamic>{
       'antialias': true,
       'alpha': true,
-      'width': Engine.engineLen,
-      'height': Engine.engineHgt,
+      'width': engineLen,
+      'height': engineHgt,
       'dpr': 1.0
     };
 
-    await Engine.flutterGlPlugin.initialize(options: options);
+    await flutterGlPlugin.initialize(options: options);
     for (var i = 0; i < 10500; i++) {
       index[i * 6 + 0] = i * 4 + 0;
       index[i * 6 + 1] = i * 4 + 1;
@@ -350,6 +359,4 @@ class Engine {
       index[i * 6 + 5] = i * 4 + 3;
     }
   }
-
-
 }

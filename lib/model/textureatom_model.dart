@@ -31,8 +31,8 @@ class TextureAtom {
     final textureName = json['texname'] as String;
     final frames = int.parse(json['frames']);
     final fps = int.parse(json['fps']).clamp(1, 10000);
-    final ln = Engine.texture.getTextureByName(textureName)?.len ?? 1;
-    final hg = Engine.texture.getTextureByName(textureName)?.hgt ?? 1;
+    final ln = Engine.instance.texture.getTextureByName(textureName)?.len ?? 1;
+    final hg = Engine.instance.texture.getTextureByName(textureName)?.hgt ?? 1;
     final tx1 = ix1 / ln;
     final ty1 = iy1 / hg;
     final tx2 = ix2 / ln;

@@ -42,12 +42,12 @@ class Loop {
     if (renderCallback != null) {
       beginRender();
       renderCallback!();
-      Engine.render();
+      Engine.instance.render();
     }
   }
 
   Future<bool> prepare() async {
-    await Engine.prepare();
+    await Engine.instance.prepare();
     if (kDebugMode) {
       print('get instance');
     }
@@ -91,8 +91,8 @@ void main() {
 }
     """;
 
-    Engine.shader.creareProgram(0, vs, fs);
-    Engine.shader.useProgram(0);
+    Engine.instance.shader.creareProgram(0, vs, fs);
+    Engine.instance.shader.useProgram(0);
     vs = """#version $version
 precision highp float;
 uniform vec4 camera;
@@ -132,21 +132,21 @@ void main() {
 }
     """;
 
-    Engine.shader.creareProgram(1, vs, fs);
-    Engine.shader.useProgram(1);
+    Engine.instance.shader.creareProgram(1, vs, fs);
+    Engine.instance.shader.useProgram(1);
     // Write the positions of vertices to a vertex shader
     return true;
   }
 
   void beginRender() {
-    final gl = Engine.flutterGlPlugin.gl;
+    final gl = Engine.instance.flutterGlPlugin.gl;
 
-    gl.viewport(0, 0, Engine.cameras[Engine.currentCamera].viewport.x,
-        Engine.cameras[Engine.currentCamera].viewport.y);
+    gl.viewport(0, 0, Engine.instance.cameras[Engine.instance.currentCamera].viewport.x,
+        Engine.instance.cameras[Engine.instance.currentCamera].viewport.y);
     gl.enable(gl.BLEND);
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
-    Engine.prepareCurrentCamera();
+    Engine.instance.prepareCurrentCamera();
 
     // Clear canvas
     gl.clearColor(0, 0, 0, 1);
@@ -157,7 +157,7 @@ void main() {
     gl.enable(gl.BLEND);
     gl.enable(gl.ALPHA);
 
-    Engine.clearScene();
+    Engine.instance.clearScene();
   }
 
   void stop() {

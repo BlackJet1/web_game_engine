@@ -23,7 +23,7 @@ class PLayGameState extends State<PlayGameWidget> {
       final y1 = Random().nextInt(720) + 0.0;
       final x2 = Random().nextInt(1280) + 0.0;
       final y2 = Random().nextInt(720) + 0.0;
-      Engine.addLine(JLine(x1, y1, 0, x2, y2, 0, 1, 1, 1, 1));
+      Engine.instance.addLine(JLine(x1, y1, 0, x2, y2, 0, 1, 1, 1, 1));
     }
   }
 
@@ -71,6 +71,7 @@ class DrawFieldGame extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final engine = Engine();
     return ClipRect(
       clipBehavior: Clip.hardEdge,
       child: GestureDetector(
@@ -78,14 +79,14 @@ class DrawFieldGame extends StatelessWidget {
         onPanUpdate: (e) {
           final dx = e.delta.dx;
           final dy = e.delta.dy;
-          Engine.cameras[Engine.currentCamera]
+          engine.cameras[engine.currentCamera]
               .moveBy(Vector2(-dx * 4, -dy * 4));
         },
         child: SizedBox.expand(
           child: IgnorePointer(
-            child: Engine.flutterGlPlugin.isInitialized
+            child: engine.flutterGlPlugin.isInitialized
                 ? HtmlElementView(
-                    viewType: Engine.flutterGlPlugin.textureId!.toString())
+                    viewType: engine.flutterGlPlugin.textureId!.toString())
                 : const Center(
                     child: CircularProgressIndicator(),
                   ),

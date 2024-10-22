@@ -10,7 +10,7 @@ class Texture {
   late final int len;
   late final int hgt;
   late ui.Image uiimage;
-  ByteData pngBytes=ByteData(0);
+  ByteData pngBytes = ByteData(0);
 
   //late ByteData openglBytes;
   late dynamic textureID;
@@ -18,7 +18,7 @@ class Texture {
   bool loaded = false;
 
   Texture(this.name, this.len, this.hgt) {
-    textureID = Engine.flutterGlPlugin.gl.createTexture();
+    textureID = Engine.instance.flutterGlPlugin.gl.createTexture();
   }
 
   Future<bool> loadNetwork(String serverpathImages) async {
@@ -45,7 +45,7 @@ class Texture {
   toString() => '$name,$len,$hgt';
 
   void toVideoMemory() {
-    final gl = Engine.flutterGlPlugin.gl;
+    final gl = Engine.instance.flutterGlPlugin.gl;
     const alignment = 1;
     gl.pixelStorei(gl.UNPACK_ALIGNMENT, alignment);
     gl
@@ -61,7 +61,7 @@ class Texture {
   }
 
   void bind() {
-    final gl = Engine.flutterGlPlugin.gl;
+    final gl = Engine.instance.flutterGlPlugin.gl;
     gl
       ..activeTexture(gl.TEXTURE0)
       ..bindTexture(gl.TEXTURE_2D, textureID);
@@ -70,7 +70,7 @@ class Texture {
 
   void release() {
     if (textureID != null) {
-      Engine.flutterGlPlugin.gl.deleteTexture(textureID);
+      Engine.instance.flutterGlPlugin.gl.deleteTexture(textureID);
     }
   }
 }
