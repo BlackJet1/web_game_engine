@@ -6,9 +6,8 @@ import 'dart:ui' as ui;
 import 'package:web_game_engine/web_game_engine.dart';
 
 class Texture {
-  late final String name;
-  late final int len;
-  late final int hgt;
+  final int len;
+  final int hgt;
   late ui.Image uiimage;
   ByteData pngBytes = ByteData(0);
 
@@ -17,11 +16,11 @@ class Texture {
   late dynamic data;
   bool loaded = false;
 
-  Texture(this.name, this.len, this.hgt) {
+  Texture(this.len, this.hgt) {
     textureID = Engine.instance.flutterGlPlugin.gl.createTexture();
   }
 
-  Future<bool> loadNetwork(String serverpathImages) async {
+  Future<bool> loadNetwork(String serverpathImages, String name) async {
     final completer = Completer<ImageInfo>();
     final img = NetworkImage(serverpathImages + name);
     img
@@ -42,7 +41,7 @@ class Texture {
   }
 
   @override
-  toString() => '$name,$len,$hgt';
+  toString() => '$len,$hgt';
 
   void toVideoMemory() {
     final gl = Engine.instance.flutterGlPlugin.gl;

@@ -6,7 +6,7 @@ class JSprite {
   final double z;
   final double len;
   final double hgt;
-  TextureAtom atom;
+  final TextureAtom atom;
   final double r;
   final double g;
   final double b;
@@ -16,26 +16,10 @@ class JSprite {
   final double anchory;
   final bool mirrorX;
   final bool mirrorY;
-  final int frame = 0;
-  final int frameLen = 0;
 
-  JSprite(
-    this.x,
-    this.y,
-    this.z,
-    this.len,
-    this.hgt,
-    this.atom,
-    this.r,
-    this.g,
-    this.b,
-    this.a,
-    this.angle,
-    this.anchorx,
-    this.anchory,
-    this.mirrorX,
-    this.mirrorY,
-  );
+  JSprite(this.x, this.y, this.z, this.len, this.hgt, this.atom, this.r, this.g,
+      this.b, this.a, this.angle, this.anchorx, this.anchory,
+      {this.mirrorX = false, this.mirrorY = false});
 }
 
 class JLine {

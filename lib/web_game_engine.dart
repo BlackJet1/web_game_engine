@@ -4,7 +4,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_gl/flutter_gl.dart';
 import 'package:web_game_engine/camera.dart';
 import 'package:web_game_engine/model/core.dart';
-import 'package:web_game_engine/model/textureatom_model.dart';
 import 'dart:typed_data';
 import 'dart:math';
 
@@ -29,9 +28,7 @@ class Engine {
   int engineHgt = 720;
   late FlutterGlPlugin flutterGlPlugin;
   List<JSprite> scene = [];
-  List<JSprite> post = [];
   List<String> usingTextures = [];
-  List<String> usingPostTextures = [];
   List postScene = [];
   List<JLine> lines = [];
   Int16List index = Int16List(65535);
@@ -100,26 +97,9 @@ class Engine {
       dynamic vao;
       final vertices = Float32Array(filteredScene.length * 36);
       for (var i = 0; i < filteredScene.length; i++) {
-        var curentFrame = (TextureAtom.aniCounter /
-                    (1 /
-                        (filteredScene[i].atom.frames *
-                            (filteredScene[i].atom.fps < 0
-                                ? 1
-                                : filteredScene[i].atom.fps))))
-                .ceil() -
-            1;
-        double atomAnimation = 0;
-        if (curentFrame < 1) {
-          curentFrame = 0;
-        } else {
-          atomAnimation = ((filteredScene[i].atom.hgt + 1) * curentFrame) /
-              filteredScene[i].atom.th;
-        }
-
         final z = filteredScene[i].z;
         final x0 = filteredScene[i].x - filteredScene[i].len / 2;
         final y0 = filteredScene[i].y - filteredScene[i].hgt / 2;
-        final frameOffset = filteredScene[i].frameLen * filteredScene[i].frame;
         final r = filteredScene[i].r;
         final g = filteredScene[i].g;
         final b = filteredScene[i].b;
@@ -150,20 +130,18 @@ class Engine {
             (y0 - cy) * cos(radians) +
             cy;
         // translate to screen coords
-        final xl = frameOffset +
-            ((filteredScene[i].mirrorX == true)
-                ? filteredScene[i].atom.tx2
-                : filteredScene[i].atom.tx1);
-        final xr = frameOffset +
-            ((filteredScene[i].mirrorX == true)
-                ? filteredScene[i].atom.tx1
-                : filteredScene[i].atom.tx2);
+        final xl = ((filteredScene[i].mirrorX == true)
+            ? filteredScene[i].atom.tx2
+            : filteredScene[i].atom.tx1);
+        final xr = ((filteredScene[i].mirrorX == true)
+            ? filteredScene[i].atom.tx1
+            : filteredScene[i].atom.tx2);
         final yd = (filteredScene[i].mirrorY == true)
-            ? filteredScene[i].atom.ty2 + atomAnimation
-            : filteredScene[i].atom.ty1 + atomAnimation;
+            ? filteredScene[i].atom.ty2
+            : filteredScene[i].atom.ty1;
         final yu = (filteredScene[i].mirrorY == true)
-            ? filteredScene[i].atom.ty1 + atomAnimation
-            : filteredScene[i].atom.ty2 + atomAnimation;
+            ? filteredScene[i].atom.ty1
+            : filteredScene[i].atom.ty2;
 
         vertices[i * 36 + 0] = x1;
         vertices[i * 36 + 1] = y1;
@@ -264,8 +242,6 @@ class Engine {
     }
   }
 
-
-
   prepareCurrentCamera() {
     final viewfinder = cameras[currentCamera].viewfinder;
     final viewport = cameras[currentCamera].viewport;
@@ -279,10 +255,6 @@ class Engine {
     final durationDelta = timestamp - _previous;
     final dt = durationDelta / Duration.microsecondsPerSecond;
 
-    if (_previous != 0) TextureAtom.aniCounter += dt;
-    if (TextureAtom.aniCounter > 2) TextureAtom.aniCounter = 0;
-    if (TextureAtom.aniCounter > 1) TextureAtom.aniCounter -= 1;
-    if (TextureAtom.aniCounter < 0) TextureAtom.aniCounter += 1;
     _previous = timestamp;
     if (scene.isNotEmpty) {
       shader.useProgram(1);
@@ -298,8 +270,6 @@ class Engine {
   void clearScene() {
     scene = [];
     lines = [];
-    post = [];
-    usingPostTextures.clear();
     usingTextures.clear();
   }
 
@@ -307,8 +277,8 @@ class Engine {
     lines.add(line);
   }
 
-  void addBox(double x, double y, double z, double len, double hgt,
-      double a, double r, double g, double b) {
+  void addBox(double x, double y, double z, double len, double hgt, double a,
+      double r, double g, double b) {
     lines
       ..add(JLine(x, y, z, x + len, y, z, r, g, b, a))
       ..add(JLine(x, y + hgt, z, x + len, y + hgt, z, r, g, b, a))
@@ -318,16 +288,7 @@ class Engine {
 
   void addSprite(JSprite sprite) {
     scene.add(sprite);
-    if (!usingTextures.any((element) => element == sprite.atom.textureName)) {
-      usingTextures.add(sprite.atom.textureName);
-    }
-  }
-
-  void addQuad(JSprite quad) {
-    post.add(quad);
-    if (!usingPostTextures.any((element) => element == quad.atom.textureName)) {
-      usingPostTextures.add(quad.atom.textureName);
-    }
+    usingTextures.add(sprite.atom.textureName);
   }
 
   void init({required int engineLen, required int engineHgt}) {

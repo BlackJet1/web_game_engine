@@ -1,8 +1,5 @@
 import 'dart:developer';
 
-import 'package:flutter/foundation.dart';
-import 'package:web_game_engine/model/texture_model.dart';
-
 import 'package:web_game_engine/model/textureatom_model.dart';
 
 class Wardrobe {
@@ -16,7 +13,7 @@ class Wardrobe {
           .value;
     } catch (e) {
       log('missing atom: $name');
-      return TextureAtom(0, 0, 0, 0, '', 0, 0, 1, 1);
+      return TextureAtom(0, 0, 0, 0, '', 0, 0, len: 1, hgt: 1);
     }
   }
 
